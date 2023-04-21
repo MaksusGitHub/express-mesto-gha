@@ -1,5 +1,6 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
-const NotFoundError = require('../errors');
+const NotFoundError = require('../errors/errors');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -9,8 +10,18 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
-    .then((user) => res.send(user))
-    .catch(() => next(new NotFoundError('Пользователя с таким Id не существует')));
+    .then((user) => {
+      if (user) {
+        res.send(user);
+      }
+      throw new NotFoundError('Пользователя с таким ID нет');
+    })
+    .catch((err) => {
+      if (err instanceof (mongoose.Error.CastError || mongoose.Error.ValidationError)) {
+        next(err);
+      }
+      next(err);
+    });
 };
 
 const createUser = (req, res, next) => {
