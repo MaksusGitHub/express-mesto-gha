@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
 const NotFoundError = require('../errors');
 
@@ -28,9 +29,28 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(() => next(new NotFoundError('Карточки с таким Id не существует')));
+    .then((card) => {
+      if (card) {
+        res.send({ card });
+      }
+      throw new NotFoundError('Card not found');
+    })
+    .catch((err) => {
+      if (err instanceof (mongoose.Error.CastError)) {
+        next(err);
+      }
+      next(err);
+    });
 };
+// const likeCard = (req, res, next) => {
+//   Card.findByIdAndUpdate(
+//     req.params.cardId,
+//     { $addToSet: { likes: req.user._id } },
+//     { new: true },
+//   )
+//     .then((card) => res.send({ data: card }))
+//     .catch(() => next(new NotFoundError('Карточки с таким Id не существует')));
+// };
 
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
