@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(DB);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
