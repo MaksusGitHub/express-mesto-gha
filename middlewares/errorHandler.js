@@ -24,7 +24,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   return res.status(httpStatus.INTERNAL_SERVER_ERROR)
-    .send({ message: `Произошла ошибка: ${err.message}` });
+    .send({ message: 'На сервере произошла ошибка' });
 };
 
 module.exports = errorHandler;
