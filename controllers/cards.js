@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/errors');
 const getCards = (req, res, next) => {
   Card.find({})
     .then((allCards) => res.send(allCards))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
@@ -13,7 +13,7 @@ const createCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then((newCard) => res.send(newCard))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const deleteCardById = (req, res, next) => {
@@ -24,7 +24,7 @@ const deleteCardById = (req, res, next) => {
       }
       throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
@@ -39,7 +39,7 @@ const likeCard = (req, res, next) => {
       }
       throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const dislikeCard = (req, res, next) => {
@@ -54,7 +54,7 @@ const dislikeCard = (req, res, next) => {
       }
       throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports = {
