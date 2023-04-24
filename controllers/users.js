@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/errors');
 const getUsers = (req, res, next) => {
   User.find({})
     .then((allUsers) => res.send(allUsers))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {
@@ -15,7 +15,7 @@ const getUserById = (req, res, next) => {
       }
       throw new NotFoundError('Пользователя с таким ID нет');
     })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -23,7 +23,7 @@ const createUser = (req, res, next) => {
 
   User.create({ name, about, avatar })
     .then((newUser) => res.send(newUser))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const updateProfile = (req, res, next) => {
@@ -38,7 +38,7 @@ const updateProfile = (req, res, next) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
@@ -53,7 +53,7 @@ const updateAvatar = (req, res, next) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports = {
