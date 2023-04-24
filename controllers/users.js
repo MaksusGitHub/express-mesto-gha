@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require('../models/user');
 const NotFoundError = require('../errors/errors');
 
@@ -16,12 +15,7 @@ const getUserById = (req, res, next) => {
       }
       throw new NotFoundError('Пользователя с таким ID нет');
     })
-    .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError || mongoose.Error.ValidationError)) {
-        next(err);
-      }
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const createUser = (req, res, next) => {
