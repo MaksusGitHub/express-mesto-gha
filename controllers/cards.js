@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Card = require('../models/card');
 const NotFoundError = require('../errors/errors');
 
@@ -25,12 +24,7 @@ const deleteCardById = (req, res, next) => {
       }
       throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError || mongoose.Error.ValidationError)) {
-        next(err);
-      }
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const likeCard = (req, res, next) => {
@@ -45,12 +39,7 @@ const likeCard = (req, res, next) => {
       }
       throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError || mongoose.Error.ValidationError)) {
-        next(err);
-      }
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const dislikeCard = (req, res, next) => {
@@ -63,14 +52,9 @@ const dislikeCard = (req, res, next) => {
       if (card) {
         res.send(card);
       }
-      throw new NotFoundError('Карточки с таким Id нет');
+      throw new NotFoundError('Карточки с таким ID нет');
     })
-    .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError || mongoose.Error.ValidationError)) {
-        next(err);
-      }
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports = {
