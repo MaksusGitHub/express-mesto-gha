@@ -1,7 +1,10 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
-const NotFoundError = require('../errors/errors');
+const NotFoundError = require('../errors/NotFoundError');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -71,10 +74,29 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', token, {
+        maxAge: 3600000,
+        httpOnly: true,
+      });
+    })
+    .catch(next);
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUserById,
   updateProfile,
   updateAvatar,
+  login,
 };

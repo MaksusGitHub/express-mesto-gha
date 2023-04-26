@@ -1,13 +1,18 @@
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
-const NotFoundError = require('../errors/errors');
+const NotFoundError = require('../errors/NotFoundError');
+const AuthError = require('../errors/AuthError');
 
 const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
   if (err instanceof NotFoundError) {
-    return res.status(httpStatus.NOT_FOUND)
+    return res.status(NotFoundError.statusCode)
+      .send({ message: err.message });
+  }
+  if (err instanceof AuthError) {
+    return res.status(AuthError.statusCode)
       .send({ message: err.message });
   }
   if (err instanceof mongoose.Error.ValidationError) {
