@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+const auth = require('./middlewares/auth');
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const { login, createUser } = require('./controllers/users');
@@ -15,16 +16,10 @@ mongoose.connect(DB);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '644154810372fbd51ca18c35',
-  };
-
-  next();
-});
-
 app.post('/signin', login);
 app.post('/singup', createUser);
+
+app.use(auth);
 
 app.use(router);
 app.use(errorHandler);
