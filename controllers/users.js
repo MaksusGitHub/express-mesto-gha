@@ -1,5 +1,10 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
-const NotFoundError = require('../errors/errors');
+const NotFoundError = require('../errors/NotFoundError');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -19,10 +24,30 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
     .then((newUser) => res.send(newUser))
+    .catch(next);
+};
+
+const getProfile = (req, res, next) => {
+  const owner = req.user._id;
+  User.findById(owner)
+    .then((user) => res.send({ user }))
     .catch(next);
 };
 
@@ -56,10 +81,31 @@ const updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', token, {
+        maxAge: 3600000,
+        httpOnly: true,
+      })
+        .send({ token });
+    })
+    .catch(next);
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUserById,
+  getProfile,
   updateProfile,
   updateAvatar,
+  login,
 };

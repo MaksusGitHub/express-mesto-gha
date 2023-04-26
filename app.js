@@ -1,24 +1,27 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+
+const auth = require('./middlewares/auth');
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
+const { login, createUser } = require('./controllers/users');
 
-const { PORT = 3000, DB = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+const { PORT, DB } = process.env;
 const app = express();
 
 mongoose.connect(DB);
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '644154810372fbd51ca18c35',
-  };
+app.post('/signup', createUser);
+app.post('/signin', login);
 
-  next();
-});
+app.use(auth);
 
 app.use(router);
 app.use(errorHandler);
