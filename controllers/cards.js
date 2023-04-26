@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
+const AccessRightsError = require('../errors/AccessRightsError');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -17,12 +18,18 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then((deletedCard) => {
-      if (deletedCard) {
-        res.send(deletedCard);
+  Card.findById(req.params.id)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточки с таким ID нет');
       }
-      throw new NotFoundError('Карточки с таким ID нет');
+      if (String(card.owner) !== req.user._id) {
+        throw new AccessRightsError('Нет доступа к этой карточке');
+      }
+      Card.findByIdAndRemove(req.params.id)
+        .then((deletedCard) => {
+          res.send(deletedCard);
+        });
     })
     .catch(next);
 };
