@@ -7,12 +7,12 @@ const errorHandler = (err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
-  if (err instanceof NotFoundError) {
-    return res.status(NotFoundError.statusCode)
+  if (err instanceof AuthError) {
+    return res.status(err.statusCode)
       .send({ message: err.message });
   }
-  if (err instanceof AuthError) {
-    return res.status(AuthError.statusCode)
+  if (err instanceof NotFoundError) {
+    return res.status(err.statusCode)
       .send({ message: err.message });
   }
   if (err instanceof mongoose.Error.ValidationError) {

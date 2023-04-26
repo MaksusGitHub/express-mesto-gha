@@ -44,6 +44,13 @@ const createUser = (req, res, next) => {
     .catch(next);
 };
 
+const getProfile = (req, res, next) => {
+  const owner = req.user._id;
+  User.findById(owner)
+    .then((user) => res.send({ user }))
+    .catch(next);
+};
+
 const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
@@ -77,7 +84,7 @@ const updateAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
@@ -87,7 +94,8 @@ const login = (req, res, next) => {
       res.cookie('jwt', token, {
         maxAge: 3600000,
         httpOnly: true,
-      });
+      })
+        .send({ token });
     })
     .catch(next);
 };
@@ -96,6 +104,7 @@ module.exports = {
   createUser,
   getUsers,
   getUserById,
+  getProfile,
   updateProfile,
   updateAvatar,
   login,
