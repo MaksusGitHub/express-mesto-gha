@@ -2,8 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT, DB } = process.env;
 const app = express();
@@ -20,6 +22,9 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.post('/signin', login);
+app.post('/singup', createUser);
 
 app.use(router);
 app.use(errorHandler);
