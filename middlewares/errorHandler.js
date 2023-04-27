@@ -16,6 +16,10 @@ const errorHandler = (err, req, res, next) => {
     return res.status(err.statusCode)
       .send({ message: err.message });
   }
+  if (err.code === 11000) {
+    return res.status(httpStatus.CONFLICT)
+      .send({ message: 'Пользователь с таким email уже существует' });
+  }
   if (err instanceof NotFoundError) {
     return res.status(err.statusCode)
       .send({ message: err.message });
