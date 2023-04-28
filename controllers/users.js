@@ -20,13 +20,8 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      if (user) {
-        res.send(user);
-      }
-      throw new NotFoundError();
-    })
+  User.findById(req.params.id).orFail(new NotFoundError())
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof NotFoundError) {
         next(new NotFoundError('Пользователя с таким ID нет'));
@@ -73,13 +68,13 @@ const createUser = (req, res, next) => {
 
 const getProfile = (req, res, next) => {
   const owner = req.user._id;
-  User.findById(owner)
+  User.findById(owner).orFail(new NotFoundError())
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
-        next(new ValidationError('Некорректный формат входных данных'));
-      } else if (err instanceof mongoose.Error.NotFoundError) {
+      if (err instanceof mongoose.Error.NotFoundError) {
         next(new NotFoundError('Пользователя с таким ID нет'));
+      } else if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
+        next(new ValidationError('Некорректный формат входных данных'));
       } else {
         next(err);
       }
@@ -96,13 +91,13 @@ const updateProfile = (req, res, next) => {
       new: true,
       runValidators: true,
     },
-  )
+  ).orFail(new NotFoundError())
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
-        next(new ValidationError('Некорректный формат входных данных'));
-      } else if (err instanceof mongoose.Error.NotFoundError) {
+      if (err instanceof mongoose.Error.NotFoundError) {
         next(new NotFoundError('Пользователя с таким ID нет'));
+      } else if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
+        next(new ValidationError('Некорректный формат входных данных'));
       } else {
         next(err);
       }
@@ -119,13 +114,13 @@ const updateAvatar = (req, res, next) => {
       new: true,
       runValidators: true,
     },
-  )
+  ).orFail(new NotFoundError())
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
-        next(new ValidationError('Некорректный формат входных данных'));
-      } else if (err instanceof mongoose.Error.NotFoundError) {
+      if (err instanceof mongoose.Error.NotFoundError) {
         next(new NotFoundError('Пользователя с таким ID нет'));
+      } else if (err instanceof mongoose.Error.ValidationError || mongoose.Error.CastError) {
+        next(new ValidationError('Некорректный формат входных данных'));
       } else {
         next(err);
       }
