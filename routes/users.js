@@ -9,11 +9,13 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 
+const { URL_REG } = require('../constants/constants');
+
 usersRouter.get('/', getUsers);
 usersRouter.get('/me', getProfile);
 usersRouter.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().alphanum().length(24),
+    id: Joi.string().alphanum().hex().length(24),
   }),
 }), getUserById);
 usersRouter.patch('/me', celebrate({
@@ -24,7 +26,7 @@ usersRouter.patch('/me', celebrate({
 }), updateProfile);
 usersRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/),
+    avatar: Joi.string().required().pattern(URL_REG),
   }),
 }), updateAvatar);
 
