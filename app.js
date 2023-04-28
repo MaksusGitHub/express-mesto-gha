@@ -8,9 +8,8 @@ const auth = require('./middlewares/auth');
 const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const { login, createUser } = require('./controllers/users');
+const { URL_REG } = require('./constants/constants');
 const NotFoundError = require('./errors/NotFoundError');
-
-const URL_REG = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
 const { PORT = 3000, DB = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
