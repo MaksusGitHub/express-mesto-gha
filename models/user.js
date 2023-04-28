@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
+const { URL_REG } = require('../constants/constants');
 const AuthError = require('../errors/AuthError');
 
 const userSchema = new mongoose.Schema({
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(v);
+        return URL_REG.test(v);
       },
       message: 'Некорректная ссылка',
     },
@@ -44,7 +45,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
 });
