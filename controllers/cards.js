@@ -28,11 +28,8 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  Card.findById(req.params.id)
+  Card.findById(req.params.id).orFail(new NotFoundError())
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError();
-      }
       if (String(card.owner) !== req.user._id) {
         throw new AccessRightsError();
       }
@@ -62,14 +59,9 @@ const likeCard = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  )
+  ).orFail(new NotFoundError())
     .populate('likes')
-    .then((card) => {
-      if (card) {
-        res.send(card);
-      }
-      throw new NotFoundError();
-    })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (res.headersSent) {
         next(err);
@@ -89,14 +81,9 @@ const dislikeCard = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  )
+  ).orFail(new NotFoundError())
     .populate('likes')
-    .then((card) => {
-      if (card) {
-        res.send(card);
-      }
-      throw new NotFoundError();
-    })
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof NotFoundError) {
         next(new NotFoundError('Карточки с таким ID нет'));
