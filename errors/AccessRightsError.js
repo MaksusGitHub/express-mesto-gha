@@ -1,7 +1,7 @@
 class AccessRightsError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'AccessRights';
+    this.name = 'AccessRightsError';
     this.statusCode = 403;
   }
 }
