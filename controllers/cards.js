@@ -4,6 +4,7 @@ const AccessRightsError = require('../errors/AccessRightsError');
 
 const getCards = (req, res, next) => {
   Card.find({})
+    .populate('likes')
     .then((allCards) => res.send(allCards))
     .catch(next);
 };
@@ -27,6 +28,7 @@ const deleteCardById = (req, res, next) => {
         throw new AccessRightsError('Нет доступа к этой карточке');
       }
       Card.findByIdAndRemove(req.params.id)
+        .populate('likes')
         .then((deletedCard) => {
           res.send(deletedCard);
         });
@@ -40,6 +42,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .populate('likes')
     .then((card) => {
       if (card) {
         res.send(card);
@@ -55,6 +58,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .populate('likes')
     .then((card) => {
       if (card) {
         res.send(card);
